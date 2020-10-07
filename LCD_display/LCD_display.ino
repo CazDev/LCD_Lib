@@ -1,6 +1,11 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
+//typedef enum { OPEN, CLOSE } open_close_state;
+//typedef enum { EAST, WEST } east_west_state;
+//typedef enum { START, STOP } start_stop_state;
+//typedef enum { EMERGENCY, NOT_EMERGENCY } emergency_state;
+
 // State enum
 typedef enum {
   NONE,
