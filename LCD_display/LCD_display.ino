@@ -6,6 +6,9 @@
 //typedef enum { START, STOP } start_stop_state;
 //typedef enum { EMERGENCY, NOT_EMERGENCY } emergency_state;
 
+//typedef enum { EAST, WEST } curr_button_state;
+//typedef enum { EAST, WEST } next_button_state;
+
 // State enum
 typedef enum {
   NONE,
