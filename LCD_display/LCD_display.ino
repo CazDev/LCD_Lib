@@ -103,30 +103,44 @@ void display_message(message msg) {
     case EAST:
       lcd.setCursor(2, 0);
       lcd.print("EAST");
+      lcd.setCursor(14, 0);
+      lcd.print("E");
       break;
     case WEST:
       lcd.setCursor(2, 0);
       lcd.print("WEST");
+      lcd.setCursor(14, 0);
+      lcd.print("W");
       break;
     case START:
       lcd.setCursor(7, 1);
+      lcd.print("ST");
+      lcd.setCursor(14, 0);
       lcd.print("ST");
       break;
     case STOP:
       lcd.setCursor(7, 1);
       lcd.print("SP");
+      lcd.setCursor(14, 0);
+      lcd.print("SP");
       break;
     case OPEN:
       lcd.setCursor(2, 1);
+      lcd.print("OP");
+      lcd.setCursor(14, 0);
       lcd.print("OP");
       break;
     case CLOSE:
       lcd.setCursor(2, 1);
       lcd.print("CL");
+      lcd.setCursor(14, 0);
+      lcd.print("CL");
       break;
     case EMERGENCY:
+      lcd.setCursor(14, 0);
+      lcd.print("EM");
       lcd.setCursor(0, 0);
-      lcd.print("Emergrency stop");
+      lcd.print("Emergrency stop ");
       lcd.setCursor(0, 1);
       lcd.print("Please Reset");
       break;
