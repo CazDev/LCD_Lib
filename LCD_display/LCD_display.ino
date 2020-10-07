@@ -85,6 +85,9 @@ void loop() {
 
 }
 
+//  "S:    >     B: "
+//  "D:   M:        "
+
 //S : Is used to indicate the current and next stations, CURR and NEXT will be replaced by EAST/WEST corresponding to the current and next stations
 
 //D : Is used to indicate the state of the door, this will either be OP = Open or CL = Close
@@ -98,27 +101,27 @@ void display_message(message msg) {
     case NONE:
       break;
     case EAST:
-      lcd.setCursor(0, 2);
+      lcd.setCursor(2, 0);
       lcd.print("EAST");
       break;
     case WEST:
-      lcd.setCursor(0, 2);
+      lcd.setCursor(2, 0);
       lcd.print("WEST");
       break;
     case START:
-      lcd.setCursor(7, 2);
+      lcd.setCursor(7, 1);
       lcd.print("ST");
       break;
     case STOP:
-      lcd.setCursor(7, 2);
+      lcd.setCursor(7, 1);
       lcd.print("SP");
       break;
     case OPEN:
-      lcd.setCursor(7, 1);
+      lcd.setCursor(2, 1);
       lcd.print("OP");
       break;
     case CLOSE:
-      lcd.setCursor(7, 1);
+      lcd.setCursor(2, 1);
       lcd.print("CL");
       break;
     case EMERGENCY:
@@ -128,7 +131,7 @@ void display_message(message msg) {
       lcd.print("Please Reset");
       break;
     default:
-      Serial.println("DEFAULT");
+      break;
   }
 }
 
