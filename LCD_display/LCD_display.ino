@@ -1,178 +1,144 @@
-#include <Wire.h>
+// import LCD library
 #include <LiquidCrystal_I2C.h>
-
-//typedef enum { OPEN, CLOSE } east_west_button_state;
-//typedef enum { EAST, WEST } east_west_button_state;
-//typedef enum { START, STOP } east_west_button_state;
-//typedef enum { EMERGENCY, NOT_EMERGENCY } east_west_button_state;
-
-//typedef enum { EAST, WEST } curr_button_state;
-//typedef enum { EAST, WEST } next_button_state;
-
-// State enum
-typedef enum {
-  NONE,
-  EAST,
-  WEST,
-  START,
-  STOP,
-  OPEN,
-  CLOSE,
-  EMERGENCY,
-} message;
-
-// include the library code:
-#include "LiquidCrystal_I2C.h"
 
 // initialize the library
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
-void setup() {
+// enums for states
+enum open_close_state { OPEN, CLOSE, OC_CLEAR };
+enum start_stop_state { START, STOP, NONE, SS_CLEAR }; 
+enum emergency_state { EMERGENCY, NOT_EMERGENCY };
+enum curr_state { C_EAST, C_WEST, C_CLEAR };
+enum next_state { N_EAST, N_WEST, N_CLEAR };
 
-  // Set baud
+open_close_state op_cl_state = OC_CLEAR;
+start_stop_state st_sp_state = SS_CLEAR;
+emergency_state em_state = NOT_EMERGENCY;
+curr_state c_state = C_CLEAR;
+next_state n_state = N_CLEAR;
+
+char line1[16] = "S:    >     B: ";
+char line2[16] = "D:   M:        ";
+
+/*
+ * Layout will be as follows on 16x2 lcd
+ * "S:    >     B: "
+ * "D:   M:        "
+*/
+
+/*
+   S : Is used to indicate the current and next stations:
+   CURR and NEXT will be replaced by EAST/WEST corresponding to the current and next stations
+   
+   D : Is used to indicate the state of the door, this will either be:
+   OP = Open or CL = Close
+   
+   M : Indicates the movement, this will be either:
+   ST = Start or SP = Stop
+   
+   B : Will be used to indicate the most recent accepted button press.
+   eg ST = Start, SP = Stop, E = East, W =  West, O = Open, C = Closed, EM = Emergency
+*/
+
+void setup() {
+  // Set baud rate
   Serial.begin(9600);
-  
+
   // initialize the lcd
   lcd.init();
   // Print a message to the LCD.
   lcd.backlight();
-
-  // Template for display
-  lcd.setCursor(0, 0);
-  lcd.print("S:    >     B: ");
-  lcd.setCursor(0, 1);
-  lcd.print("D:   M:        ");
-
-  //Run tests
-  message msg = NONE;
-
-  // East West states
-  delay(1000);
-  Serial.println("EAST");
-  msg = EAST;
-  display_message(msg);
-  delay(1000);
-  Serial.println("WEST");
-  msg = WEST;
-  display_message(msg);
-
-  // Start Stop states
-  delay(1000);
-  Serial.println("START");
-  msg = START;
-  display_message(msg);
-  delay(1000);
-  Serial.println("STOP");
-  msg = STOP;
-  display_message(msg);
-
-  // Open Close states
-  delay(1000);
-  Serial.println("OPEN");
-  msg = OPEN;
-  display_message(msg);
-  delay(1000);
-  Serial.println("CLOSE");
-  msg = CLOSE;
-  display_message(msg);
-
-  // Emergency state
-  delay(1000);
-  Serial.println("EMERGENCY");
-  msg = EMERGENCY;
-  display_message(msg);
-
 }
 
 void loop() {
+  display_open_close(op_cl_state);
+  display_start_stop(st_sp_state);
+  display_emergency(em_state);
+  display_curr(c_state);
+  display_next(n_state);
 
+  // write lines to display
+  lcd.setCursor(0, 0);
+  lcd.print(line1);
+  lcd.setCursor(0, 1);
+  lcd.print(line2);
+  
+  delay(500);
 }
 
-//  "S:    >     B: "
-//  "D:   M:        "
+void insert_chars(char insert, char *line, int index){
+   char msg[10];
+   char buffer[10];
+   strcpy(msg, line);
+   strcpy(buffer, msg);
+   buffer[index] = insert;
+   strcpy(&buffer[index + 1], &msg[index]);
+}
 
-//S : Is used to indicate the current and next stations, CURR and NEXT will be replaced by EAST/WEST corresponding to the current and next stations
+// topleft state display - line2, index 14
 
-//D : Is used to indicate the state of the door, this will either be OP = Open or CL = Close
-
-//M : Indicates the movement, this will be either ST = Start or SP = Stop
-
-//B : Will be used to indicate the most recent accepted button press, eg ST = Start, SP = Stop, E = East, W =  West, O = Open, C = Closed, EM = Emergency
-
-void display_message(message msg) {
-  switch (msg) {
-    case NONE:
-      break;
-    case EAST:
-      lcd.setCursor(2, 0);
-      lcd.print("EAST");
-      lcd.setCursor(14, 0);
-      lcd.print("E");
-      break;
-    case WEST:
-      lcd.setCursor(2, 0);
-      lcd.print("WEST");
-      lcd.setCursor(14, 0);
-      lcd.print("W");
-      break;
-    case START:
-      lcd.setCursor(7, 1);
-      lcd.print("ST");
-      lcd.setCursor(14, 0);
-      lcd.print("ST");
-      break;
-    case STOP:
-      lcd.setCursor(7, 1);
-      lcd.print("SP");
-      lcd.setCursor(14, 0);
-      lcd.print("SP");
-      break;
+void display_open_close(open_close_state s) {
+  switch (s) {
     case OPEN:
-      lcd.setCursor(2, 1);
-      lcd.print("OP");
-      lcd.setCursor(14, 0);
-      lcd.print("OP");
+      // line2, index 2: OP
       break;
     case CLOSE:
-      lcd.setCursor(2, 1);
-      lcd.print("CL");
-      lcd.setCursor(14, 0);
-      lcd.print("CL");
-      break;
-    case EMERGENCY:
-      lcd.setCursor(14, 0);
-      lcd.print("EM");
-      lcd.setCursor(0, 0);
-      lcd.print("Emergrency stop ");
-      lcd.setCursor(0, 1);
-      lcd.print("Please Reset");
+      // line2, index 2: CL
       break;
     default:
       break;
   }
 }
 
-//void set_door(open_close_state oc_state) {
-//  lcd.setCursor(7,1);
-//  switch (oc_state) {
-//    case OPEN: lcd.print("OP"); break;
-//    case CLOSE: lcd.print("CL"); break;
-//    default: break;
-//  }
-//}
-//
-//void set_dir(east_west_state s1) {
-//  lcd.setCursor(0,2);
-//  switch (s1) {
-//    case EAST: lcd.print("E"); break;
-//    case WEST: lcd.print("W"); break;
-//    default: break;
-//  }
-//}
-//
-//void set_emergency() {
-//  lcd.setCursor(0,0);
-//  lcd.print("Emergrency stop");
-//  lcd.setCursor(0,1);
-//  lcd.print("Please Reset");
-//}
+void display_start_stop(start_stop_state s) {
+  switch (s) {
+    case START:
+      // line2, index 7: ST
+      break;
+    case STOP:
+      // line2, index 7: SP
+      break;
+    default:
+      break;
+  }
+}
+
+void display_emergency(emergency_state s) {
+  switch (s) {
+    case EMERGENCY:
+      strcpy(line1, "Emergrency stop");
+      strcpy(line2, "Please Reset   ");
+      break;
+    case NOT_EMERGENCY:
+      // Do nothing when there is no emergency state
+      break;
+    default:
+      break;
+  }
+}
+
+void display_curr(curr_state s) {
+    switch (s) {
+    case C_EAST:
+      // line1, index 2: EAST
+      break;
+    case C_WEST:
+      // line1, index 2: WEST
+      break;
+    default:
+      break;
+  }
+}
+
+void display_next(next_state s) {
+    switch (s) {
+    case N_EAST:
+      // line1, index 7: EAST
+      break;
+    case N_WEST:
+      // line1, index 7: WEST
+      break;
+    default:
+      break;
+  }
+}
