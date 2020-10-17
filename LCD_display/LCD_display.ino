@@ -66,24 +66,23 @@ void loop() {
   delay(500);
 }
 
-void insert_chars(char insert, char *line, int index){
-   char msg[10];
-   char buffer[10];
-   strcpy(msg, line);
-   strcpy(buffer, msg);
-   buffer[index] = insert;
-   strcpy(&buffer[index + 1], &msg[index]);
+void insert_chars(String insert, char *line, int index){
+  for (int i = 0; i < insert.length(); i++) {
+    line[i+index] = insert[i];
+  }
 }
-
-// topleft state display - line2, index 14
 
 void display_open_close(open_close_state s) {
   switch (s) {
     case OPEN:
       // line2, index 2: OP
+      insert_chars("OP", line2, 2);
+      insert_chars("OP", line1, 14);
       break;
     case CLOSE:
       // line2, index 2: CL
+      insert_chars("CL", line2, 2);
+      insert_chars("CL", line1, 14);
       break;
     default:
       break;
@@ -94,9 +93,13 @@ void display_start_stop(start_stop_state s) {
   switch (s) {
     case START:
       // line2, index 7: ST
+      insert_chars("ST", line2, 7);
+      insert_chars("ST", line1, 14);
       break;
     case STOP:
       // line2, index 7: SP
+      insert_chars("SP", line2, 7);
+      insert_chars("SP", line1, 14);
       break;
     default:
       break;
@@ -121,9 +124,11 @@ void display_curr(curr_state s) {
     switch (s) {
     case C_EAST:
       // line1, index 2: EAST
+      insert_chars("EAST", line1, 2);
       break;
     case C_WEST:
       // line1, index 2: WEST
+      insert_chars("WEST", line1, 2);
       break;
     default:
       break;
@@ -134,9 +139,11 @@ void display_next(next_state s) {
     switch (s) {
     case N_EAST:
       // line1, index 7: EAST
+      insert_chars("EAST", line1, 7);
       break;
     case N_WEST:
       // line1, index 7: WEST
+      insert_chars("WEST", line1, 7);
       break;
     default:
       break;
